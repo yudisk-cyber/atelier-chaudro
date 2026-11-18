@@ -84,6 +84,10 @@ footer{text-align:center;color:var(--mu);font-size:12.5px;margin-top:30px;line-h
   <a class="card" href="#onglet"><svg viewBox="0 0 40 40"><path d="M4 8h16l8 8v20M4 20h10l2 2v14"/><path d="M20 8 14 20"/></svg><b>Onglet / coude</b><small>Coupe d'angle, coude segmenté</small></a>
   <a class="card" href="#cone"><svg viewBox="0 0 40 40"><path d="M10 6h20l6 28H4z"/></svg><b>Cône / réduction</b><small>Développé de tronc de cône</small></a>
   <a class="card" href="#virole"><svg viewBox="0 0 40 40"><ellipse cx="20" cy="10" rx="14" ry="5"/><path d="M6 10v20c0 3 6 5 14 5s14-2 14-5V10"/></svg><b>Virole</b><small>Longueur de tôle à rouler</small></a>
+  <a class="card" href="#tremie"><svg viewBox="0 0 40 40"><path d="M4 34h32M4 34l10-26h12l10 26"/><ellipse cx="20" cy="8" rx="6" ry="2"/></svg><b>Trémie</b><small>Carré / rectangle → rond, triangulation</small></a>
+  <a class="card" href="#cintrage"><svg viewBox="0 0 40 40"><path d="M4 34h12a14 14 0 0 0 14-14V4"/></svg><b>Cintrage tube</b><small>Longueur de débit, repères, retour</small></a>
+  <a class="card" href="#soudure"><svg viewBox="0 0 40 40"><path d="M4 34h32M4 34V20h14l4 14M36 34V20H22"/><path d="M20 4v10"/></svg><b>Soudure</b><small>Métal déposé, électrodes, fil, gorge</small></a>
+  <a class="card" href="#percage"><svg viewBox="0 0 40 40"><path d="M16 4h8v8l-4 24-4-24z"/><path d="M14 16h12M14 22h12"/></svg><b>Perçage / taraudage</b><small>Forets, passages, couples, vitesses</small></a>
   <a class="card" href="#masse"><svg viewBox="0 0 40 40"><path d="M12 14h16l6 22H6z"/><circle cx="20" cy="9" r="4"/></svg><b>Masse</b><small>Poids tôle, tube, rond, profil</small></a>
  </div>
  <footer>Résultats indicatifs : valide toujours sur une pièce d'essai.<br>Les calculs se font sur ton téléphone, sans connexion.</footer>
@@ -212,6 +216,92 @@ footer{text-align:center;color:var(--mu);font-size:12.5px;margin-top:30px;line-h
  <div class="box"><div class="res" id="ms-res"></div></div>
 </section>
 
+<!-- TREMIE -->
+<section class="view" id="v-tremie">
+ <h2>Trémie carré → rond</h2>
+ <div class="box"><div class="f">
+  <label>Côté A (mm, suivant X)<input id="tr-A" inputmode="decimal" value="400"></label>
+  <label>Côté B (mm, suivant Y)<input id="tr-B" inputmode="decimal" value="400"></label>
+  <label>Ø rond (mm)<input id="tr-d" inputmode="decimal" value="250"></label>
+  <label>Hauteur H (mm)<input id="tr-H" inputmode="decimal" value="300"></label>
+  <label>Décalage X (mm)<input id="tr-x" inputmode="decimal" value="0"></label>
+  <label>Décalage Y (mm)<input id="tr-y" inputmode="decimal" value="0"></label>
+  <label>Divisions par quart<select id="tr-n"><option>2</option><option selected>3</option><option>4</option><option>6</option><option>8</option></select></label>
+ </div><p class="note">Mets les cotes à la fibre neutre (milieu de l'épaisseur) : côtés intérieurs + e, Ø intérieur + e. Décalage = déport du centre du rond par rapport au centre du rectangle (0 = trémie centrée). Joint placé au milieu du côté A avant.</p></div>
+ <div class="box">
+  <div class="res" id="tr-res"></div><div id="tr-msg"></div>
+  <h3>Développé (pièce entière)</h3>
+  <div class="svgw" id="tr-svg"></div>
+  <div class="row pr"><button class="btn g" onclick="printSvg('tr-svg')">Imprimer le gabarit 1:1</button></div>
+  <h3>Vraies grandeurs</h3>
+  <div class="tw"><table id="tr-tab"></table></div>
+  <p class="note">Traçage par triangulation : pars du joint (ligne M–0), puis reporte chaque triangle avec ses trois longueurs au compas. Les coins (K1 à K4) sont les angles du rectangle, les points 0, 1, 2… sont pris sur le rond. Pli léger le long des lignes coin → rond, zones planes entre les éventails. Entre deux points voisins du rond, reporte la « corde entre points ».</p>
+ </div>
+</section>
+
+<!-- CINTRAGE -->
+<section class="view" id="v-cintrage">
+ <h2>Cintrage tube</h2>
+ <div class="box"><div class="f">
+  <label>Ø tube (mm)<input id="ct-d" inputmode="decimal" value="33.7"></label>
+  <label>Rayon de cintrage (axe, mm)<input id="ct-R" inputmode="decimal" value="100"></label>
+  <label>Retour élastique (°)<input id="ct-s" inputmode="decimal" value="0" placeholder="0"></label>
+ </div></div>
+ <div class="box">
+  <h3 style="margin-top:0">Cotes aux intersections et angles</h3>
+  <div id="ct-segs"></div>
+  <div class="row"><button class="btn g" onclick="ctAdd()">+ Ajouter un cintre</button><button class="btn g" onclick="ctDel()">− Retirer le dernier</button></div>
+  <p class="note">Cotes prises sur l'axe du tube, d'extrémité à intersection des axes (ou intersection à intersection). Angle = angle de cintrage (de combien le tube tourne, 90 = équerre).</p>
+ </div>
+ <div class="box">
+  <div class="res" id="ct-res"></div><div id="ct-msg"></div>
+  <h3>Repères sur le tube droit</h3>
+  <div class="tw"><table id="ct-tab"></table></div>
+  <p class="note">Positions mesurées depuis l'extrémité de départ. Le retour élastique s'ajoute à l'angle à afficher sur la cintreuse ; mesure-le sur un essai (souvent 1 à 3° en acier).</p>
+ </div>
+</section>
+
+<!-- SOUDURE -->
+<section class="view" id="v-soudure">
+ <h2>Soudure</h2>
+ <div class="box"><div class="f">
+  <label>Type de joint<select id="sd-t"><option value="angle">Angle (gorge a)</option><option value="v">Bout à bout en V</option><option value="x">Bout à bout en X</option><option value="i">Bord droit (I)</option></select></label>
+  <label id="sd-aw">Gorge a (mm)<input id="sd-a" inputmode="decimal" value="4"></label>
+  <label id="sd-ew">Épaisseur e (mm)<input id="sd-e" inputmode="decimal" value="10"></label>
+  <label id="sd-angw">Angle chanfrein total (°)<input id="sd-ang" inputmode="decimal" value="60"></label>
+  <label id="sd-tw">Talon (mm)<input id="sd-tal" inputmode="decimal" value="1.5"></label>
+  <label id="sd-gw">Écartement (mm)<input id="sd-g" inputmode="decimal" value="2"></label>
+  <label>Longueur de cordon (mm)<input id="sd-L" inputmode="decimal" value="1000"></label>
+  <label>Nombre de cordons<input id="sd-q" inputmode="numeric" value="1"></label>
+  <label>Matière<select id="sd-m"></select></label>
+  <label>Procédé<select id="sd-p"><option value="mma">Électrode enrobée (MMA)</option><option value="mig">MIG/MAG fil plein</option><option value="ff">Fil fourré</option><option value="tig">TIG</option></select></label>
+  <label id="sd-dw">Ø électrode<select id="sd-d"><option value="2.5">2,5 × 350</option><option value="3.2" selected>3,2 × 350</option><option value="4">4,0 × 450</option><option value="5">5,0 × 450</option></select></label>
+  <label>Surépaisseur (%)<input id="sd-s" inputmode="decimal" value="10"></label>
+ </div></div>
+ <div class="box"><div class="res" id="sd-res"></div><div id="sd-msg"></div>
+ <p class="note">Section d'un cordon d'angle = a². Rendements pris en compte (métal déposé / métal consommé) : électrode ≈ 60 % (bout et enrobage), MIG ≈ 95 %, fil fourré ≈ 85 %, TIG ≈ 98 %. Valeurs indicatives pour le chiffrage.</p></div>
+</section>
+
+<!-- PERCAGE -->
+<section class="view" id="v-percage">
+ <h2>Perçage / taraudage</h2>
+ <div class="box"><div class="f">
+  <label>Filetage<select id="pc-th"></select></label>
+  <label>Classe de vis<select id="pc-cl"><option value="1">8.8</option><option value="1.4">10.9</option><option value="1.7">12.9</option><option value="0.7">Inox A2/A4-70</option><option value="0.45">5.6 / 6.8</option></select></label>
+ </div></div>
+ <div class="box"><div class="res" id="pc-res"></div>
+ <p class="note">Couples indicatifs pour vis huilées (frottement ≈ 0,14), serrage à ~90 % de la limite élastique. Suis les prescriptions du plan ou du fabricant quand elles existent.</p></div>
+ <h3>Vitesse de perçage</h3>
+ <div class="box"><div class="f">
+  <label>Ø foret (mm)<input id="pc-D" inputmode="decimal" value="10"></label>
+  <label>Matière usinée<select id="pc-m"><option value="28">Acier doux S235</option><option value="20">Acier S355 / mi-dur</option><option value="12">Acier allié / trempé revenu</option><option value="10">Inox</option><option value="70">Aluminium</option><option value="22">Fonte</option><option value="45">Laiton / bronze</option></select></label>
+  <label>Foret<select id="pc-o"><option value="1">HSS</option><option value="1.25">HSS-Co</option><option value="3">Carbure</option></select></label>
+ </div><div class="res" id="pc-res2" style="margin-top:12px"></div>
+ <p class="note">N = 1000 × Vc / (π × D). Commence au bas de la plage, surtout sur perceuse à colonne, et lubrifie (sauf fonte). En inox : vitesse basse, avance franche, ne jamais laisser frotter.</p></div>
+ <h3>Tableau des filetages</h3>
+ <div class="box"><div class="tw"><table id="pc-tab"></table></div></div>
+</section>
+
 </main>
 <div id="print"></div>
 
@@ -246,11 +336,11 @@ function printSvg(id){
 if(window.self!==window.top)document.querySelectorAll('.pr').forEach(e=>e.style.display='none');
 
 // ---------- navigation ----------
-const views=['pliage','piquage','onglet','cone','virole','masse'];
+const views=['pliage','piquage','onglet','cone','virole','masse','tremie','cintrage','soudure','percage'];
 function route(){const h=location.hash.slice(1);const v=views.includes(h)?h:'home';
  document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
  $('back').style.display=v==='home'?'none':'block';window.scrollTo(0,0);
- ({pliage:calcPl,piquage:calcPq,onglet:calcOg,cone:calcCn,virole:calcVr,masse:calcMs}[v]||(()=>{}))();}
+ ({pliage:calcPl,piquage:calcPq,onglet:calcOg,cone:calcCn,virole:calcVr,masse:calcMs,tremie:calcTr,cintrage:calcCt,soudure:calcSd,percage:calcPc}[v]||(()=>{}))();}
 window.addEventListener('hashchange',route);
 
 // persistance des champs
@@ -423,9 +513,118 @@ function calcMs(){
  $('ms-res').innerHTML=kpi('Masse unitaire',f(kg,2),'kg',1)+(q>1?kpi('Masse × '+q,f(kg*q,2),'kg',1):'')+(isFinite(Lm)?kpi('Masse linéique',f(Lm*m.rho/1e6,2),'kg/m'):'')+(isFinite(S)?kpi('Surface',f(S,3),'m²'):'')+kpi('Densité',f(m.rho,2),'kg/dm³');
 }
 
+// ---------- TREMIE ----------
+function calcTr(){
+ const A=num('tr-A'),B=num('tr-B'),d=num('tr-d'),H=num('tr-H'),ex=num('tr-x')||0,ey=num('tr-y')||0,n=+$('tr-n').value,r=d/2;
+ if(!(A>0&&B>0&&d>0&&H>0)){$('tr-msg').innerHTML='<div class="err">Saisis A, B, Ø et H.</div>';$('tr-res').innerHTML='';return}
+ let msg='';if(Math.abs(ex)+r>A/2||Math.abs(ey)+r>B/2)msg+='<div class="warn">En vue de dessus, le rond dépasse du rectangle : le calcul reste valable, mais vérifie que c\'est bien voulu.</div>';
+ const N=4*n,cp=i=>{const th=rad(270+360*i/N);return [ex+r*Math.cos(th),ey+r*Math.sin(th),H]};
+ const K={K1:[A/2,-B/2,0],K2:[A/2,B/2,0],K3:[-A/2,B/2,0],K4:[-A/2,-B/2,0]};
+ const mx=Math.max(-A/2,Math.min(A/2,ex)),M=[mx,-B/2,0];
+ const d3=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1],p[2]-q[2]);
+ // séquence de la bande
+ const steps=[{v:K.K1,l:'K1',bot:1}];const ks=['K2','K3','K4'];
+ for(let q=0;q<4;q++){for(let k=1;k<=n;k++)steps.push({v:cp(q*n+k),l:String((q*n+k)%N),bot:0});steps.push(q<3?{v:K[ks[q]],l:ks[q],bot:1}:{v:M,l:'M',bot:1})}
+ let B3=M,T3=cp(0),Bl='M',Tl='0',B2=[0,0],T2=[0,d3(M,cp(0))],prev=null;
+ const bot=[B2],top=[T2],lines=[[B2,T2]],tab=[['M','0',d3(M,cp(0))]];
+ for(const s of steps){
+  const dB=d3(B3,s.v),dT=d3(T3,s.v),L=Math.hypot(T2[0]-B2[0],T2[1]-B2[1]);
+  const a=(dB*dB-dT*dT+L*L)/(2*L),h=Math.sqrt(Math.max(dB*dB-a*a,0));
+  const ux=(T2[0]-B2[0])/L,uy=(T2[1]-B2[1])/L,px=B2[0]+a*ux,py=B2[1]+a*uy;
+  const c1=[px-h*uy,py+h*ux],c2=[px+h*uy,py-h*ux];
+  let P;if(!prev)P=c2[0]>c1[0]?c2:c1;else P=Math.hypot(c1[0]-prev[0],c1[1]-prev[1])>Math.hypot(c2[0]-prev[0],c2[1]-prev[1])?c1:c2;
+  if(s.bot){tab.push([Bl,s.l,dB],[Tl,s.l,dT]);prev=B2;B2=P;B3=s.v;Bl=s.l;bot.push(P)}
+  else{tab.push([Bl,s.l,dB]);prev=T2;T2=P;T3=s.v;Tl=s.l;top.push(P)}
+  lines.push([B2,T2]);
+ }
+ const all=bot.concat(top),xs=all.map(p=>p[0]),ys=all.map(p=>-p[1]);
+ const mnx=Math.min(...xs),mny=Math.min(...ys),W=Math.max(...xs)-mnx,Hh=Math.max(...ys)-mny;
+ const chord=2*r*Math.sin(Math.PI/N);
+ $('tr-res').innerHTML=kpi('Encombrement tôle',f(W,0)+' × '+f(Hh,0),'mm',1)+kpi('Corde entre points',f(chord,1),'mm')+kpi('Ligne de joint M–0',f(tab[0][2],1),'mm')+kpi('Points sur le rond',N);
+ $('tr-msg').innerHTML=msg;
+ // tableau (dédoublonné)
+ const seen={};let t='<tr><th>Ligne</th><th>Vraie grandeur (mm)</th></tr>';
+ tab.forEach(([a,b,v])=>{const k=a+'–'+b;if(seen[k])return;seen[k]=1;const side=/^K|^M/.test(a)&&/^K|^M/.test(b);const ch=!/^K|^M/.test(a)&&!/^K|^M/.test(b);
+  t+=`<tr><td>${k}${side?' <small style="color:var(--mu)">(côté)</small>':ch?' <small style="color:var(--mu)">(corde)</small>':''}</td><td><b style="color:${side||ch?'var(--tx)':'var(--ac2)'}">${f(v,1)}</b></td></tr>`});
+ $('tr-tab').innerHTML=t;
+ const sc=Math.max(W,Hh),sw=sc*0.003,fs=sc*0.022,Y=p=>-p[1];
+ let g=lines.map(([p,q])=>`<line x1="${p[0]}" y1="${Y(p)}" x2="${q[0]}" y2="${Y(q)}" stroke="${C.mu}" stroke-width="${sw}"/>`).join('');
+ g+=`<polygon points="${bot.concat(top.slice().reverse()).map(p=>p[0]+','+Y(p)).join(' ')}" fill="rgba(255,138,31,.10)" stroke="${C.ac}" stroke-width="${sw*2.5}" stroke-linejoin="round"/>`;
+ const bl=['M','K1','K2','K3','K4','M'];bot.forEach((p,i)=>g+=`<text x="${p[0]}" y="${Y(p)+fs*1.3}" font-size="${fs}" fill="${C.ac2}" text-anchor="middle" font-family="JetBrains Mono">${bl[i]}</text>`);
+ top.forEach((p,i)=>g+=`<text x="${p[0]}" y="${Y(p)-fs*0.5}" font-size="${fs*0.85}" fill="${C.tx}" text-anchor="middle" font-family="JetBrains Mono">${i%N}</text>`);
+ $('tr-svg').innerHTML=svgWrap(mnx,mny-fs*1.5,W,Hh+fs*3,g,fs);
+}
+
+// ---------- CINTRAGE ----------
+let ctData=store.get('ctsegs')||{a:[200,300,200],ang:[90,90]};
+function ctRender(){let h='';ctData.a.forEach((a,i)=>{
+ h+=`<div class="seg"><div class="lbl">Cote ${i+1}</div><label>Longueur axe (mm)<input inputmode="decimal" value="${a}" data-k="a" data-i="${i}"></label><div></div><div></div></div>`;
+ if(i<ctData.ang.length)h+=`<div class="seg bend"><div class="lbl" style="color:var(--ac)">Cintre ${i+1}</div><label>Angle (°)<input inputmode="decimal" value="${ctData.ang[i]}" data-k="ang" data-i="${i}"></label><div></div><div></div></div>`});
+ $('ct-segs').innerHTML=h}
+$('ct-segs').addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(!k)return;ctData[k][+t.dataset.i]=parseFloat(String(t.value).replace(',','.'));store.set('ctsegs',ctData);calcCt()});
+function ctAdd(){ctData.a.push(200);ctData.ang.push(90);store.set('ctsegs',ctData);ctRender();calcCt()}
+function ctDel(){if(ctData.a.length<=2)return;ctData.a.pop();ctData.ang.pop();store.set('ctsegs',ctData);ctRender();calcCt()}
+function calcCt(){
+ const d=num('ct-d'),R=num('ct-R'),sp=num('ct-s')||0,n=ctData.ang.length;
+ if(!(R>0)){$('ct-msg').innerHTML='<div class="err">Saisis le rayon de cintrage.</div>';return}
+ let msg='';const T=[],Ar=[];
+ ctData.ang.forEach(a=>{if(!(a>0&&a<180)){msg+='<div class="err">Angle de cintrage entre 1 et 179°.</div>';T.push(0);Ar.push(0);return}T.push(R*Math.tan(rad(a)/2));Ar.push(Math.PI*R*a/180)});
+ const st=ctData.a.map((a,i)=>a-(i>0?T[i-1]:0)-(i<n?T[i]:0));
+ const tot=st.reduce((s,x)=>s+x,0)+Ar.reduce((s,x)=>s+x,0),gain=ctData.a.reduce((s,x)=>s+x,0)-tot;
+ $('ct-res').innerHTML=kpi('Longueur de débit',f(tot,1),'mm',1)+kpi('Gain total',f(gain,1),'mm')+(d>0?kpi('R / Ø',f(R/d,2)):'');
+ if(d>0&&R<1.5*d)msg+='<div class="warn">Rayon serré (&lt; 1,5 × Ø) : mandrin et galets adaptés conseillés, risque de plis et d\'écrasement.</div>';
+ st.forEach((x,i)=>{if(x<0)msg+=`<div class="err">Tronçon droit ${i+1} négatif : cote trop courte pour ce rayon.</div>`;else if(d>0&&x<d&&i>0&&i<n)msg+=`<div class="warn">Tronçon ${i+1} très court (${f(x,0)} mm) : vérifie la prise entre deux cintres.</div>`});
+ $('ct-msg').innerHTML=msg;
+ let t='<tr><th>Élément</th><th>Longueur</th><th>Du … au (mm)</th><th>Angle machine</th></tr>',pos=0;
+ st.forEach((x,i)=>{t+=`<tr><td>Droit ${i+1}</td><td>${f(x,1)}</td><td>${f(pos,1)} → ${f(pos+x,1)}</td><td></td></tr>`;pos+=x;
+  if(i<n){t+=`<tr><td style="color:var(--ac)">Cintre ${i+1} (${ctData.ang[i]}°)</td><td>${f(Ar[i],1)}</td><td style="color:var(--ac2)">${f(pos,1)} → ${f(pos+Ar[i],1)}</td><td><b style="color:var(--ac2)">${f(ctData.ang[i]+sp,1)}°</b></td></tr>`;pos+=Ar[i]}});
+ t+=`<tr><td>Tangentes T</td><td colspan="3">${T.map(x=>f(x,1)).join(' / ')}</td></tr>`;
+ $('ct-tab').innerHTML=t;
+}
+
+// ---------- SOUDURE ----------
+$('sd-m').innerHTML=$('ms-m').innerHTML;
+function calcSd(){
+ const ty=$('sd-t').value,pr=$('sd-p').value,show=(id,v)=>$(id).style.display=v?'flex':'none';
+ show('sd-aw',ty==='angle');show('sd-angw',ty==='v'||ty==='x');show('sd-tw',ty==='v'||ty==='x');show('sd-gw',ty!=='angle');show('sd-dw',pr==='mma');
+ $('sd-ew').firstChild.textContent=ty==='angle'?'Épaisseur mini des pièces (mm)':'Épaisseur e (mm)';
+ const a=num('sd-a'),e=num('sd-e'),al=num('sd-ang'),tal=num('sd-tal')||0,g=num('sd-g')||0,L=num('sd-L'),q=Math.max(1,num('sd-q')||1),s=num('sd-s')||0,m=MATS[$('sd-m').value];
+ let A=NaN,msg='';
+ if(ty==='angle'){A=a*a;if(e>0&&a>0.7*e)msg+=`<div class="warn">Gorge forte pour ${f(e,0)} mm : on vise en général a ≤ 0,7 × e mini (soit ${f(0.7*e,1)} mm).</div>`;if(a<3)msg+='<div class="warn">Gorge &lt; 3 mm : souvent en dessous du minimum admis en charpente.</div>'}
+ else{const ec=e-tal;if(ec<0&&ty!=='i'){$('sd-msg').innerHTML='<div class="err">Le talon est plus grand que l\'épaisseur.</div>';return}
+  const tg=Math.tan(rad(al)/2);A=ty==='v'?ec*ec*tg+g*e:ty==='x'?ec*ec/2*tg+g*e:g*e;if(ty==='i'&&e>4)msg+='<div class="warn">Bord droit au-delà de 3–4 mm : pénétration difficile, chanfreine.</div>'}
+ A*=1+s/100;
+ if(!(A>0&&L>0)){$('sd-res').innerHTML='';$('sd-msg').innerHTML=msg+'<div class="err">Complète les cotes.</div>';return}
+ const Lt=L*q,kgm=A*1000*m.rho/1e6,kg=A*Lt*m.rho/1e6;
+ const eff={mma:0.6,mig:0.95,ff:0.85,tig:0.98}[pr],rate={mma:1.2,mig:3,ff:4,tig:0.6}[pr];
+ let r=kpi('Métal déposé',f(kg,kg<1?3:2),'kg',1)+kpi('Section',f(A,1),'mm²')+kpi('Par mètre',f(kgm,3),'kg/m');
+ if(pr==='mma'){const dep={2.5:10,3.2:17,4:35,5:55}[$('sd-d').value];r+=kpi('Électrodes ≈',Math.ceil(kg*1000/dep),'pcs',1)+kpi('Électrodes (poids)',f(kg/eff,2),'kg')}
+ else r+=kpi(pr==='tig'?'Baguette ≈':'Fil ≈',f(kg/eff,2),'kg',1);
+ r+=kpi("Temps d'arc ≈",f(kg/rate*60,0),'min');
+ if(ty==='angle')r+=kpi('Côté z (jambe)',f(a*Math.SQRT2,1),'mm');
+ $('sd-res').innerHTML=r;$('sd-msg').innerHTML=msg;
+}
+
+// ---------- PERCAGE ----------
+// [nom, D, pas, foret taraudage, passage fin, moyen, large, clé, lamage CHC Ø/prof, couple 8.8 N·m]
+const TH=[['M3',3,.5,2.5,3.2,3.4,3.6,'5,5','6,5 / 3,4',1.3],['M4',4,.7,3.3,4.3,4.5,4.8,'7','8 / 4,4',3],['M5',5,.8,4.2,5.3,5.5,5.8,'8','10 / 5,4',5.9],['M6',6,1,5,6.4,6.6,7,'10','11 / 6,4',10],['M8',8,1.25,6.8,8.4,9,10,'13','15 / 8,6',25],['M10',10,1.5,8.5,10.5,11,12,'16 (17)','18 / 10,6',49],['M12',12,1.75,10.2,13,13.5,14.5,'18 (19)','20 / 12,6',85],['M14',14,2,12,15,15.5,16.5,'21 (22)','24 / 14,6',135],['M16',16,2,14,17,17.5,18.5,'24','26 / 16,6',210],['M18',18,2.5,15.5,19,20,21,'27','30 / 18,6',290],['M20',20,2.5,17.5,21,22,24,'30','33 / 20,6',410],['M22',22,2.5,19.5,23,24,26,'34 (32)','36 / 22,6',550],['M24',24,3,21,25,26,28,'36','40 / 24,8',710],['M27',27,3,24,28,30,32,'41','46 / 28',1050],['M30',30,3.5,26.5,31,33,35,'46','48 / 31',1420],['M36',36,4,32,37,39,42,'55','57 / 37',2480]];
+const FINE=[['M8×1',8,1,27],['M10×1',10,1,55],['M10×1,25',10,1.25,52],['M12×1,25',12,1.25,90],['M12×1,5',12,1.5,87],['M14×1,5',14,1.5,140],['M16×1,5',16,1.5,220],['M18×1,5',18,1.5,330],['M20×1,5',20,1.5,460],['M24×2',24,2,780]];
+FINE.forEach(([n,D,P,c])=>{const b=TH.find(x=>x[1]===D);TH.push([n,D,P,+(D-P).toFixed(2),b[4],b[5],b[6],b[7],b[8],c])});
+$('pc-th').innerHTML=TH.map((x,i)=>`<option value="${i}"${x[0]==='M8'?' selected':''}>${x[0]}${x[0].includes('×')?' (fin)':''}</option>`).join('');
+$('pc-tab').innerHTML='<tr><th>Filet</th><th>Pas</th><th>Foret</th><th>Passage moyen</th><th>Clé</th><th>Couple 8.8</th></tr>'+TH.map(x=>`<tr><td>${x[0]}</td><td>${f(x[2],2)}</td><td><b style="color:var(--ac2)">${f(x[3],1)}</b></td><td>${f(x[5],1)}</td><td>${x[7]}</td><td>${f(x[9],x[9]<10?1:0)}</td></tr>`).join('');
+function calcPc(){
+ const x=TH[+$('pc-th').value],k=+$('pc-cl').value;
+ $('pc-res').innerHTML=kpi('Foret taraudage',f(x[3],1),'mm',1)+kpi('Pas',f(x[2],2),'mm')+kpi('Passage fin / moyen / large',f(x[4],1)+' / '+f(x[5],1)+' / '+f(x[6],1),'mm')+kpi('Clé',x[7],'mm')+kpi('Lamage CHC Ø / prof.',x[8],'mm')+kpi('Couple de serrage',f(x[9]*k,x[9]*k<10?1:0),'N·m',1)+kpi('Avant-trou borgne',`filet + ${f(3*x[2],1)}`,'mm');
+ const D=num('pc-D'),vc=+$('pc-m').value*+$('pc-o').value;
+ if(!(D>0)){$('pc-res2').innerHTML='';return}
+ const N=1000*vc/(Math.PI*D),fz=Math.min(0.4,Math.max(0.03,0.015*D+0.02))*(+$('pc-m').value===10?0.8:+$('pc-m').value>=45?1.3:1);
+ $('pc-res2').innerHTML=kpi('Vitesse broche',f(N,0),'tr/min',1)+kpi('Plage',f(N*0.8,0)+' – '+f(N*1.15,0),'tr/min')+kpi('Vc',f(vc,0),'m/min')+kpi('Avance',f(fz,2),'mm/tr')+kpi('Avance',f(N*fz,0),'mm/min')+(D>13?kpi('Avant-trou conseillé',f(Math.max(4,D*0.35),1),'mm'):'');
+}
+
 // ---------- init ----------
 plRender();msDims();
 persist('pliage',calcPl);persist('piquage',calcPq);persist('onglet',calcOg);persist('cone',calcCn);persist('virole',calcVr);persist('masse',calcMs);
+ctRender();persist('tremie',calcTr);persist('cintrage',calcCt);persist('soudure',calcSd);persist('percage',calcPc);
 msDims();
 route();
 if('serviceWorker' in navigator&&window.self===window.top&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
