@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atelier Chaudro</title>
+<meta name="theme-color" content="#16181b">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#141619;--p:#1e2125;--p2:#272b30;--line:#353a41;--tx:#e9e7e3;--mu:#9aa0a8;--ac:#ff8a1f;--ac2:#ffb35c;--ok:#5fd38d;--err:#ff6060}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:Barlow,system-ui,sans-serif;font-size:16px}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+ background-image:repeating-linear-gradient(135deg,transparent 0 22px,rgba(255,255,255,.012) 22px 23px)}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(20,22,25,.94);backdrop-filter:blur(6px);border-bottom:2px solid var(--ac)}
+header h1{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;margin:0;flex:1}
+header h1 span{color:var(--ac)}
+#back{display:none;background:none;border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:6px 12px;font:600 15px Barlow,system-ui,sans-serif;cursor:pointer}
+main{max-width:860px;margin:0 auto;padding:16px 14px 60px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.card{background:var(--p);border:1px solid var(--line);border-left:4px solid var(--ac);border-radius:10px;padding:16px 14px;cursor:pointer;text-decoration:none;color:var(--tx);display:block;transition:background .15s}
+.card:hover,.card:active{background:var(--p2)}
+.card b{font-family:"Barlow Condensed",system-ui,sans-serif;font-size:21px;letter-spacing:.03em;text-transform:uppercase;display:block;margin:8px 0 4px}
+.card small{color:var(--mu);font-size:14px;line-height:1.3}
+.card svg{width:38px;height:38px;stroke:var(--ac);fill:none;stroke-width:2}
+.view{display:none}.view.on{display:block}
+h2{font-family:"Barlow Condensed",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.05em;font-size:26px;margin:4px 0 12px}
+h3{font-family:"Barlow Condensed",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.05em;font-size:18px;color:var(--ac2);margin:20px 0 8px}
+.box{background:var(--p);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+.f{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px 12px}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mu);font-weight:600}
+input,select{background:var(--bg);border:1px solid var(--line);color:var(--tx);border-radius:7px;padding:10px;font:600 17px "JetBrains Mono",ui-monospace,monospace;width:100%}
+select{font:600 15px Barlow,system-ui,sans-serif}
+input:focus,select:focus{outline:2px solid var(--ac);border-color:transparent}
+.btn{background:var(--ac);color:#1a1000;border:0;border-radius:8px;padding:10px 14px;font:700 15px Barlow,system-ui,sans-serif;cursor:pointer}
+.btn.g{background:var(--p2);color:var(--tx);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.res{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}
+.kpi span{display:block;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.kpi b{font:600 22px "JetBrains Mono",ui-monospace,monospace;color:var(--ac2)}
+.kpi.big b{font-size:28px;color:var(--ac)}
+.kpi i{font-style:normal;font-size:13px;color:var(--mu);margin-left:3px}
+table{width:100%;border-collapse:collapse;font:14px "JetBrains Mono",ui-monospace,monospace}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+th{color:var(--mu);font:600 12px Barlow,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em}
+td:first-child,th:first-child{text-align:left}
+.tw{overflow-x:auto;max-height:420px;overflow-y:auto}
+.svgw{background:#0e1012;border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:10px}
+.svgw svg{width:100%;height:auto;display:block;max-height:420px}
+.note{font-size:13.5px;color:var(--mu);line-height:1.45;margin-top:10px}
+.err{color:var(--err);font-weight:600;font-size:14px;margin-top:8px}
+.warn{color:var(--ac2);font-size:14px;margin-top:6px}
+.seg{display:grid;grid-template-columns:70px 1fr 1fr 40px;gap:8px;align-items:end;margin-bottom:8px}
+.seg .lbl{font:600 13px Barlow,system-ui,sans-serif;color:var(--mu);padding-bottom:12px}
+.seg.bend{padding-left:14px;border-left:2px dashed var(--ac)}
+.x{background:none;border:1px solid var(--line);color:var(--mu);border-radius:7px;height:44px;cursor:pointer;font-size:18px}
+footer{text-align:center;color:var(--mu);font-size:12.5px;margin-top:30px;line-height:1.5}
+#print{display:none}
+@media print{
+ body{background:#fff;padding:0} header,main{display:none!important}
+ #print{display:block} #print svg{display:block}
+ @page{margin:8mm}
+}
+</style>
+</head>
+<body>
+<header>
+ <button id="back" onclick="location.hash=''">‹ Outils</button>
+ <h1>Atelier <span>Chaudro</span></h1>
+</header>
+<main>
+
+<!-- ACCUEIL -->
+<section class="view on" id="v-home">
+ <div class="grid">
+  <a class="card" href="#pliage"><svg viewBox="0 0 40 40"><path d="M4 32h14l14-22"/><path d="M4 36h34" stroke-dasharray="3 3"/></svg><b>Pliage</b><small>Développé, vé, rayon, force de presse</small></a>
+  <a class="card" href="#piquage"><svg viewBox="0 0 40 40"><rect x="3" y="24" width="34" height="12" rx="6"/><path d="M14 24V4h12v20"/></svg><b>Piquage</b><small>Tube sur tube, angle, excentré + gabarit</small></a>
+  <a class="card" href="#onglet"><svg viewBox="0 0 40 40"><path d="M4 8h16l8 8v20M4 20h10l2 2v14"/><path d="M20 8 14 20"/></svg><b>Onglet / coude</b><small>Coupe d'angle, coude segmenté</small></a>
+  <a class="card" href="#cone"><svg viewBox="0 0 40 40"><path d="M10 6h20l6 28H4z"/></svg><b>Cône / réduction</b><small>Développé de tronc de cône</small></a>
+  <a class="card" href="#virole"><svg viewBox="0 0 40 40"><ellipse cx="20" cy="10" rx="14" ry="5"/><path d="M6 10v20c0 3 6 5 14 5s14-2 14-5V10"/></svg><b>Virole</b><small>Longueur de tôle à rouler</small></a>
+  <a class="card" href="#masse"><svg viewBox="0 0 40 40"><path d="M12 14h16l6 22H6z"/><circle cx="20" cy="9" r="4"/></svg><b>Masse</b><small>Poids tôle, tube, rond, profil</small></a>
+ </div>
+ <footer>Résultats indicatifs : valide toujours sur une pièce d'essai.<br>Les calculs se font sur ton téléphone, sans connexion.</footer>
+</section>
+
+<!-- PLIAGE -->
+<section class="view" id="v-pliage">
+ <h2>Pliage</h2>
+ <div class="box">
+  <div class="f">
+   <label>Épaisseur e (mm)<input id="pl-e" inputmode="decimal" value="2"></label>
+   <label>Matière<select id="pl-mat">
+    <option value="acier">Acier S235 (Rm 410)</option><option value="s355">Acier S355 (Rm 510)</option>
+    <option value="inox">Inox 304 (Rm 600)</option><option value="alu">Alu 5754 (Rm 220)</option><option value="custom">Autre (Rm à saisir)</option></select></label>
+   <label id="pl-rmw" style="display:none">Rm (MPa)<input id="pl-rm" inputmode="decimal" value="400"></label>
+   <label>Ouverture de vé V<select id="pl-v"></select></label>
+   <label>Rayon int. Ri (mm)<input id="pl-ri" inputmode="decimal" placeholder="auto"></label>
+   <label>Coefficient K<input id="pl-k" inputmode="decimal" placeholder="auto (DIN 6935)"></label>
+   <label>Longueur de pli (mm)<input id="pl-l" inputmode="decimal" value="1000"></label>
+  </div>
+ </div>
+ <div class="box">
+  <h3 style="margin-top:0">Cotes extérieures et angles</h3>
+  <div id="pl-segs"></div>
+  <div class="row"><button class="btn g" onclick="plAdd()">+ Ajouter un pli</button><button class="btn g" onclick="plDel()">− Retirer le dernier</button></div>
+  <p class="note">Angle = angle entre les deux ailes après pliage (90 = équerre, 135 = pli ouvert). Cotes prises à l'extérieur, jusqu'à l'intersection des faces.</p>
+ </div>
+ <div class="box">
+  <div class="res" id="pl-res"></div>
+  <div id="pl-msg"></div>
+  <div class="svgw" id="pl-svg"></div>
+  <h3>Mise à plat</h3>
+  <div class="tw"><table id="pl-tab"></table></div>
+  <p class="note">K auto : DIN 6935, k = 0,65 + 0,5·log(Ri/e), plafonné à 1 (K = k/2). Ri auto : estimé à partir du vé (environ V/6 pour l'acier). Force : F ≈ 1,42 × Rm × e² / V, en pliage en l'air. Vérifie toujours avec la table de ta presse et de tes outils.</p>
+ </div>
+</section>
+
+<!-- PIQUAGE -->
+<section class="view" id="v-piquage">
+ <h2>Piquage tube sur tube</h2>
+ <div class="box"><div class="f">
+  <label>Ø collecteur D (mm)<input id="pq-D" inputmode="decimal" value="168.3"></label>
+  <label>Ø piquage d (mm)<input id="pq-d" inputmode="decimal" value="114.3"></label>
+  <label>Angle entre axes (°)<input id="pq-a" inputmode="decimal" value="90"></label>
+  <label>Excentrage (mm)<input id="pq-o" inputmode="decimal" value="0"></label>
+  <label>Génératrices<select id="pq-n"><option>8</option><option selected>12</option><option>16</option><option>24</option><option>32</option><option>48</option></select></label>
+  <label>Longueur côté court (mm)<input id="pq-L" inputmode="decimal" placeholder="optionnel"></label>
+ </div>
+ <p class="note">Pour un gabarit enroulé autour du tube, prends le Ø extérieur du piquage. Excentrage 0 = axes concourants. Angle 90 = piquage d'équerre.</p></div>
+ <div class="box">
+  <div class="res" id="pq-res"></div><div id="pq-msg"></div>
+  <h3>Gabarit du piquage (développé)</h3>
+  <div class="svgw" id="pq-svg"></div>
+  <div class="row pr"><button class="btn g" onclick="printSvg('pq-svg')">Imprimer le gabarit 1:1</button></div>
+  <h3>Cotes de traçage</h3>
+  <div class="tw"><table id="pq-tab"></table></div>
+  <p class="note">Trace un trait droit tout autour du piquage (au niveau du côté le plus court). Divise la circonférence en génératrices égales, puis reporte sur chacune la cote h depuis ce trait vers l'extrémité. Génératrice 0 = dans le plan des axes, côté angle aigu.</p>
+  <h3>Trou dans le collecteur</h3>
+  <div class="svgw" id="pq-svg2"></div>
+  <div class="tw"><table id="pq-tab2"></table></div>
+  <p class="note">X = position le long de l'axe du collecteur (depuis le point où les axes se croisent). S = longueur d'arc mesurée sur le collecteur depuis sa génératrice du dessus.</p>
+ </div>
+</section>
+
+<!-- ONGLET -->
+<section class="view" id="v-onglet">
+ <h2>Onglet / coude segmenté</h2>
+ <div class="box"><div class="f">
+  <label>Ø tube d (mm)<input id="og-d" inputmode="decimal" value="60.3"></label>
+  <label>Angle de déviation (°)<input id="og-A" inputmode="decimal" value="90"></label>
+  <label>Nombre de coupes<input id="og-j" inputmode="numeric" value="1"></label>
+  <label>Rayon du coude Rc (mm)<input id="og-R" inputmode="decimal" placeholder="optionnel"></label>
+  <label>Génératrices<select id="og-n"><option>8</option><option selected>12</option><option>16</option><option>24</option><option>32</option></select></label>
+ </div>
+ <p class="note">Déviation = de combien la ligne tourne (90 = coude d'équerre). 1 coupe = onglet simple entre 2 tubes ; 3 coupes = coude en 4 morceaux (2 demi-segments + 2 segments).</p></div>
+ <div class="box">
+  <div class="res" id="og-res"></div><div id="og-msg"></div>
+  <h3>Gabarit d'une coupe</h3>
+  <div class="svgw" id="og-svg"></div>
+  <div class="row pr"><button class="btn g" onclick="printSvg('og-svg')">Imprimer le gabarit 1:1</button></div>
+  <h3>Cotes de traçage</h3>
+  <div class="tw"><table id="og-tab"></table></div>
+  <p class="note">h mesurée depuis un trait droit tracé au niveau de l'intrados (côté court). Génératrice 0 = extrados (côté long).</p>
+ </div>
+</section>
+
+<!-- CONE -->
+<section class="view" id="v-cone">
+ <h2>Cône / réduction</h2>
+ <div class="box"><div class="f">
+  <label>Grand Ø ext. D (mm)<input id="cn-D" inputmode="decimal" value="500"></label>
+  <label>Petit Ø ext. d (mm)<input id="cn-d" inputmode="decimal" value="300"></label>
+  <label>Hauteur H (mm)<input id="cn-H" inputmode="decimal" value="250"></label>
+  <label>Épaisseur e (mm)<input id="cn-e" inputmode="decimal" value="3"></label>
+  <label>Nombre de parties<input id="cn-p" inputmode="numeric" value="1"></label>
+ </div><p class="note">Le développé est calculé sur les diamètres moyens (Ø ext − e). Mets e = 0 pour tracer sur les cotes saisies.</p></div>
+ <div class="box">
+  <div class="res" id="cn-res"></div><div id="cn-msg"></div>
+  <div class="svgw" id="cn-svg"></div>
+  <p class="note">Trace depuis le sommet : arc de rayon R (grand), arc de rayon r (petit), secteur d'angle θ. Contrôle avec la corde.</p>
+ </div>
+</section>
+
+<!-- VIROLE -->
+<section class="view" id="v-virole">
+ <h2>Virole</h2>
+ <div class="box"><div class="f">
+  <label>Diamètre (mm)<input id="vr-D" inputmode="decimal" value="500"></label>
+  <label>Cote donnée<select id="vr-t"><option value="int">Ø intérieur</option><option value="ext">Ø extérieur</option><option value="moy">Ø moyen</option></select></label>
+  <label>Épaisseur e (mm)<input id="vr-e" inputmode="decimal" value="4"></label>
+  <label>Hauteur virole (mm)<input id="vr-h" inputmode="decimal" value="1000"></label>
+  <label>Matière<select id="vr-m"></select></label>
+ </div></div>
+ <div class="box"><div class="res" id="vr-res"></div>
+ <p class="note">Longueur de tôle = π × Ø moyen (fibre neutre au milieu de l'épaisseur). N'oublie pas l'écartement de soudure et les chutes de croquage.</p></div>
+</section>
+
+<!-- MASSE -->
+<section class="view" id="v-masse">
+ <h2>Masse</h2>
+ <div class="box"><div class="f">
+  <label>Forme<select id="ms-f"><option value="tole">Tôle / plat</option><option value="tube">Tube rond</option><option value="rect">Tube carré / rect.</option><option value="rond">Rond plein</option><option value="disque">Disque / flasque</option></select></label>
+  <label>Matière<select id="ms-m"></select></label>
+  <label>Quantité<input id="ms-q" inputmode="numeric" value="1"></label>
+ </div><div class="f" id="ms-dims" style="margin-top:10px"></div></div>
+ <div class="box"><div class="res" id="ms-res"></div></div>
+</section>
+
+</main>
+<div id="print"></div>
+
+<script>
+// ---------- utilitaires ----------
+const $=id=>document.getElementById(id);
+const num=id=>{const el=$(id);if(!el)return NaN;const v=String(el.value).trim().replace(',','.');return v===''?NaN:parseFloat(v)};
+const f=(x,d=1)=>isFinite(x)?x.toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const rad=a=>a*Math.PI/180, deg=a=>a*180/Math.PI;
+const kpi=(l,v,u='',big)=>`<div class="kpi${big?' big':''}"><span>${l}</span><b>${v}</b><i>${u}</i></div>`;
+const store={get(k){try{return JSON.parse(localStorage.getItem('chaudro_'+k))}catch(e){return null}},set(k,v){try{localStorage.setItem('chaudro_'+k,JSON.stringify(v))}catch(e){}}};
+const MATS={acier:{n:'Acier',rho:7.85,rm:410,ri:1/6},s355:{n:'Acier S355',rho:7.85,rm:510,ri:1/6},inox:{n:'Inox',rho:7.93,rm:600,ri:1/5},alu:{n:'Aluminium',rho:2.70,rm:220,ri:1/6.5},cuivre:{n:'Cuivre',rho:8.94,rm:220,ri:1/6},laiton:{n:'Laiton',rho:8.50,rm:350,ri:1/6}};
+['vr-m','ms-m'].forEach(id=>{$(id).innerHTML=Object.entries(MATS).filter(([k])=>k!=='s355').map(([k,m])=>`<option value="${k}">${m.n} (${m.rho})</option>`).join('')});
+const VS=[6,8,10,12,16,20,25,32,40,50,63,80,100,125,160,200,250];
+$('pl-v').innerHTML='<option value="auto">Auto (recommandé)</option>'+VS.map(v=>`<option>${v}</option>`).join('');
+
+// SVG helpers
+function svgWrap(minx,miny,w,h,inner,pad){pad=pad??Math.max(w,h)*0.05;return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minx-pad} ${miny-pad} ${w+2*pad} ${h+2*pad}" data-w="${w+2*pad}" data-h="${h+2*pad}" data-vb="${minx-pad} ${miny-pad} ${w+2*pad} ${h+2*pad}">${inner}</svg>`}
+const C={ac:'#ff8a1f',ac2:'#ffb35c',mu:'#6f7680',tx:'#e9e7e3'};
+
+// impression 1:1 (fonctionne dans l'appli installée / navigateur)
+function printSvg(id){
+ const s=$(id).querySelector('svg');if(!s)return;
+ const c=s.cloneNode(true);c.setAttribute('width',s.dataset.w+'mm');c.setAttribute('height',s.dataset.h+'mm');
+ c.querySelectorAll('[stroke="'+C.mu+'"]').forEach(e=>e.setAttribute('stroke','#888'));
+ c.querySelectorAll('[stroke="'+C.ac+'"],[stroke="'+C.ac2+'"],[stroke="'+C.tx+'"]').forEach(e=>e.setAttribute('stroke','#000'));
+ c.querySelectorAll('text').forEach(e=>e.setAttribute('fill','#000'));
+ const p=$('print');p.innerHTML='';p.appendChild(c);
+ const note=document.createElement('p');note.style.cssText='font:10pt sans-serif';note.textContent='Échelle 1:1 — vérifie avec un réglet avant de découper. Imprime avec mise à l\'échelle 100 % (pas "ajuster à la page").';p.appendChild(note);
+ try{window.print()}catch(e){}
+}
+if(window.self!==window.top)document.querySelectorAll('.pr').forEach(e=>e.style.display='none');
+
+// ---------- navigation ----------
+const views=['pliage','piquage','onglet','cone','virole','masse'];
+function route(){const h=location.hash.slice(1);const v=views.includes(h)?h:'home';
+ document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
+ $('back').style.display=v==='home'?'none':'block';window.scrollTo(0,0);
+ ({pliage:calcPl,piquage:calcPq,onglet:calcOg,cone:calcCn,virole:calcVr,masse:calcMs}[v]||(()=>{}))();}
+window.addEventListener('hashchange',route);
+
+// persistance des champs
+function persist(prefix,fn){const sec=$('v-'+prefix);
+ const saved=store.get(prefix)||{};
+ sec.querySelectorAll('input[id],select[id]').forEach(el=>{if(saved[el.id]!==undefined)el.value=saved[el.id]});
+ sec.addEventListener('input',()=>{const o={};sec.querySelectorAll('input[id],select[id]').forEach(el=>o[el.id]=el.value);store.set(prefix,o);fn()});
+}
+
+// ---------- PLIAGE ----------
+let plData=store.get('plsegs')||{a:[50,100,50],ang:[90,90],dir:[1,1]};
+function plRender(){
+ let h='';
+ plData.a.forEach((a,i)=>{
+  h+=`<div class="seg"><div class="lbl">Aile ${i+1}</div><label>Cote ext. (mm)<input inputmode="decimal" value="${a}" data-k="a" data-i="${i}"></label><div></div><div></div></div>`;
+  if(i<plData.ang.length)h+=`<div class="seg bend"><div class="lbl" style="color:var(--ac)">Pli ${i+1}</div><label>Angle (°)<input inputmode="decimal" value="${plData.ang[i]}" data-k="ang" data-i="${i}"></label><label>Sens<select data-k="dir" data-i="${i}"><option value="1"${plData.dir[i]==1?' selected':''}>↺ gauche</option><option value="-1"${plData.dir[i]==-1?' selected':''}>↻ droite</option></select></label><div></div></div>`;
+ });
+ $('pl-segs').innerHTML=h;
+}
+$('pl-segs').addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(!k)return;const v=parseFloat(String(t.value).replace(',','.'));plData[k][+t.dataset.i]=k==='dir'?+t.value:v;store.set('plsegs',plData);calcPl()});
+function plAdd(){plData.a.push(50);plData.ang.push(90);plData.dir.push(1);store.set('plsegs',plData);plRender();calcPl()}
+function plDel(){if(plData.a.length<=2)return;plData.a.pop();plData.ang.pop();plData.dir.pop();store.set('plsegs',plData);plRender();calcPl()}
+$('pl-mat').addEventListener('change',()=>{$('pl-rmw').style.display=$('pl-mat').value==='custom'?'flex':'none'});
+
+function calcPl(){
+ const e=num('pl-e'),mk=$('pl-mat').value,m=MATS[mk]||{rm:num('pl-rm'),ri:1/6};
+ const rm=mk==='custom'?num('pl-rm'):m.rm;
+ $('pl-rmw').style.display=mk==='custom'?'flex':'none';
+ let msg='';
+ if(!(e>0)){$('pl-res').innerHTML='';$('pl-msg').innerHTML='<div class="err">Saisis une épaisseur.</div>';return}
+ const target=e<=3?8*e:e<=10?10*e:12*e;
+ const Vrec=VS.find(v=>v>=target)||VS[VS.length-1];
+ const V=$('pl-v').value==='auto'?Vrec:+$('pl-v').value;
+ let Ri=num('pl-ri');const riAuto=!(Ri>=0);if(riAuto)Ri=V*m.ri;
+ let K=num('pl-k');const kAuto=!(K>0);
+ if(kAuto){const r=Ri/e;const k=r>=5?1:Math.min(1,0.65+0.5*Math.log10(Math.max(r,0.01)));K=Math.max(k,0.05)/2}
+ const Ft=1.42*rm*e*e/V/9.81, L=num('pl-l');
+ let total=0,flats=[],SB=[],BA=[],bad=false;
+ const n=plData.ang.length;
+ for(let j=0;j<n;j++){const a=plData.ang[j];if(!(a>0&&a<180)){bad=true;SB.push(0);BA.push(0);continue}
+  const b=180-a;SB.push(Math.tan(rad(b)/2)*(Ri+e));BA.push(rad(b)*(Ri+K*e));}
+ plData.a.forEach((a,i)=>{flats.push(a-(i>0?SB[i-1]:0)-(i<n?SB[i]:0))});
+ total=flats.reduce((s,x)=>s+x,0)+BA.reduce((s,x)=>s+x,0);
+ const ded=BA.map((b,j)=>2*SB[j]-b);
+ $('pl-res').innerHTML=kpi('Développé',f(total,1),'mm',1)+kpi('Vé',V,'mm')+kpi('Ri '+(riAuto?'estimé':''),f(Ri,1),'mm')+kpi('K'+(kAuto?' (DIN)':''),f(K,3))+kpi('Force',f(Ft,1),'t/m')+(L>0?kpi('Force sur '+f(L,0)+' mm',f(Ft*L/1000,1),'t'):'')+kpi('Aile mini ≈',f(0.7*V,0),'mm');
+ if(bad)msg+='<div class="err">Angle de pli entre 1 et 179°.</div>';
+ if(V<6*e)msg+='<div class="warn">Vé étroit pour cette épaisseur : risque de marquage et force élevée.</div>';
+ if(Ri<e*0.8)msg+='<div class="warn">Ri &lt; e : risque de criques, surtout en inox ou alu dur.</div>';
+ plData.a.forEach((a,i)=>{if(a<0.7*V)msg+=`<div class="warn">Aile ${i+1} (${f(a,0)} mm) plus courte que l'aile mini pour un vé de ${V}.</div>`});
+ flats.forEach((x,i)=>{if(x<0)msg+=`<div class="err">Aile ${i+1} trop courte : la partie droite est négative.</div>`});
+ $('pl-msg').innerHTML=msg;
+ // tableau mise à plat
+ let t='<tr><th>Élément</th><th>Longueur</th><th>Position depuis bord</th></tr>',pos=0;
+ flats.forEach((x,i)=>{t+=`<tr><td>Aile ${i+1} (droite)</td><td>${f(x,2)}</td><td>${f(pos,2)} → ${f(pos+x,2)}</td></tr>`;pos+=x;
+  if(i<n){t+=`<tr><td style="color:var(--ac)">Pli ${i+1} (${plData.ang[i]}°) — axe</td><td>${f(BA[i],2)}</td><td style="color:var(--ac)">${f(pos+BA[i]/2,2)}</td></tr>`;pos+=BA[i];}});
+ t+=`<tr><td>Déductions par pli</td><td colspan="2">${ded.map(d=>f(d,2)).join(' / ')}</td></tr>`;
+ $('pl-tab').innerHTML=t;
+ // profil
+ let x=0,y=0,h=0,pts=[[0,0]];
+ plData.a.forEach((a,i)=>{x+=a*Math.cos(h);y+=a*Math.sin(h);pts.push([x,y]);if(i<n)h+=rad(180-plData.ang[i])*plData.dir[i]});
+ const xs=pts.map(p=>p[0]),ys=pts.map(p=>-p[1]);const mnx=Math.min(...xs),mny=Math.min(...ys),w=Math.max(...xs)-mnx||1,hh=Math.max(...ys)-mny||1;
+ const sc=Math.max(w,hh);const fs=sc*0.045;
+ let inner=`<polyline points="${pts.map(p=>p[0]+','+(-p[1])).join(' ')}" fill="none" stroke="${C.ac}" stroke-width="${sc*0.012}" stroke-linejoin="round"/>`;
+ pts.slice(0,-1).forEach((p,i)=>{const q=pts[i+1];inner+=`<text x="${(p[0]+q[0])/2}" y="${-(p[1]+q[1])/2-fs*0.5}" fill="${C.tx}" font-size="${fs}" font-family="JetBrains Mono" text-anchor="middle">${f(plData.a[i],0)}</text>`});
+ $('pl-svg').innerHTML=svgWrap(mnx,mny,w,hh,inner,sc*0.12);
+}
+
+// ---------- PIQUAGE ----------
+function calcPq(){
+ const D=num('pq-D'),d=num('pq-d'),al=num('pq-a'),off=num('pq-o')||0,N=+$('pq-n').value,L=num('pq-L');
+ const R=D/2,r=d/2;let msg='';
+ if(!(D>0&&d>0&&al>0&&al<=90)){$('pq-msg').innerHTML='<div class="err">Vérifie les diamètres et l\'angle (entre 1 et 90°).</div>';return}
+ if(Math.abs(off)+r>R+1e-9){$('pq-msg').innerHTML='<div class="err">Le piquage dépasse du collecteur (Ø piquage/2 + excentrage &gt; Ø collecteur/2). Le développé n\'existe pas dans ce cas.</div>';$('pq-res').innerHTML='';return}
+ const sa=Math.sin(rad(al)),ca=Math.cos(rad(al));
+ const pt=th=>{const y=r*Math.sin(th)+off;const z=Math.sqrt(Math.max(R*R-y*y,0));const t=(z+r*Math.cos(th)*ca)/sa;return{t,y,z,X:t*ca+r*Math.cos(th)*sa}};
+ const M=720,P=[];for(let i=0;i<=M;i++){const th=2*Math.PI*i/M;P.push({th,...pt(th)})}
+ const tmax=Math.max(...P.map(p=>p.t)),tmin=Math.min(...P.map(p=>p.t));
+ const circ=2*Math.PI*r,hmax=tmax-tmin;
+ $('pq-res').innerHTML=kpi('Circonférence',f(circ,1),'mm',1)+kpi('Flèche h max',f(hmax,1),'mm',1)+kpi('Pas génératrices',f(circ/N,1),'mm')+(L>0?kpi('Longueur tube à débiter',f(L+hmax,1),'mm'):'');
+ if(d/D>0.95)msg+='<div class="warn">Piquage presque de même Ø : prévois un ajustage à la meule.</div>';
+ $('pq-msg').innerHTML=msg;
+ // tableau
+ let t=`<tr><th>Gén.</th><th>Angle</th><th>Pos. (mm)</th><th>h (mm)</th>${L>0?'<th>Long. totale</th>':''}</tr>`;
+ for(let i=0;i<=N;i++){const th=2*Math.PI*i/N,p=pt(th),h=tmax-p.t;t+=`<tr><td>${i===N?'0 (retour)':i}</td><td>${f(360*i/N,1)}°</td><td>${f(r*th,1)}</td><td><b style="color:var(--ac2)">${f(h,1)}</b></td>${L>0?`<td>${f(L+h,1)}</td>`:''}</tr>`}
+ $('pq-tab').innerHTML=t;
+ // gabarit
+ const sw=Math.max(circ,hmax)*0.004,fs=Math.max(circ*0.022,4);
+ let g=`<rect x="0" y="0" width="${circ}" height="${hmax}" fill="none" stroke="${C.mu}" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}"/>`;
+ g+=`<polyline points="${P.map(p=>(r*p.th)+','+(tmax-p.t)).join(' ')}" fill="rgba(255,138,31,.12)" stroke="${C.ac}" stroke-width="${sw*2}"/>`;
+ for(let i=0;i<=N;i++){const th=2*Math.PI*i/N,h=tmax-pt(th).t,x=r*th;g+=`<line x1="${x}" y1="0" x2="${x}" y2="${h}" stroke="${C.mu}" stroke-width="${sw}"/><text x="${x}" y="${-fs*0.4}" font-size="${fs}" fill="${C.tx}" text-anchor="middle" font-family="JetBrains Mono">${i%N}</text>`}
+ g+=`<line x1="0" y1="0" x2="${circ}" y2="0" stroke="${C.tx}" stroke-width="${sw*1.5}"/>`;
+ $('pq-svg').innerHTML=svgWrap(0,-fs*1.4,circ,hmax+fs*1.4,g,fs);
+ // trou collecteur
+ const Q=P.map(p=>({X:p.X,S:R*Math.atan2(p.y,p.z)}));
+ const xs=Q.map(q=>q.X),ss=Q.map(q=>q.S),mnx=Math.min(...xs),mxx=Math.max(...xs),mns=Math.min(...ss),mxs=Math.max(...ss);
+ const W=mxx-mnx,H=mxs-mns,sw2=Math.max(W,H)*0.006,fs2=Math.max(W,H)*0.04;
+ let g2=`<line x1="${mnx-W*0.1}" y1="0" x2="${mxx+W*0.1}" y2="0" stroke="${C.mu}" stroke-width="${sw2}" stroke-dasharray="${sw2*4} ${sw2*3}"/><line x1="0" y1="${mns-H*0.1}" x2="0" y2="${mxs+H*0.1}" stroke="${C.mu}" stroke-width="${sw2}" stroke-dasharray="${sw2*4} ${sw2*3}"/>`;
+ g2+=`<polygon points="${Q.map(q=>q.X+','+q.S).join(' ')}" fill="rgba(255,138,31,.12)" stroke="${C.ac}" stroke-width="${sw2*2}"/>`;
+ let t2='<tr><th>Gén.</th><th>X (mm)</th><th>S (mm)</th></tr>';
+ for(let i=0;i<N;i++){const th=2*Math.PI*i/N,p=pt(th),X=p.X,S=R*Math.atan2(p.y,p.z);t2+=`<tr><td>${i}</td><td>${f(X,1)}</td><td>${f(S,1)}</td></tr>`;g2+=`<circle cx="${X}" cy="${S}" r="${sw2*2.5}" fill="${C.ac2}"/><text x="${X}" y="${S-fs2*0.5}" font-size="${fs2}" fill="${C.tx}" text-anchor="middle" font-family="JetBrains Mono">${i}</text>`}
+ $('pq-tab2').innerHTML=t2;
+ $('pq-svg2').innerHTML=svgWrap(mnx-W*0.1,mns-H*0.1-fs2,W*1.2,H*1.2+fs2,g2,fs2);
+}
+
+// ---------- ONGLET ----------
+function calcOg(){
+ const d=num('og-d'),A=num('og-A'),j=Math.max(1,Math.round(num('og-j')||1)),Rc=num('og-R'),N=+$('og-n').value,r=d/2;
+ if(!(d>0&&A>0&&A<180)){$('og-msg').innerHTML='<div class="err">Vérifie le Ø et l\'angle (entre 1 et 179°).</div>';return}
+ const phi=A/(2*j),tp=Math.tan(rad(phi)),circ=Math.PI*d,hmax=2*r*tp;let msg='';
+ let k=kpi('Angle de coupe',f(phi,2),'°',1)+kpi('Flèche h max',f(hmax,1),'mm',1)+kpi('Circonférence',f(circ,1),'mm')+kpi('Réglage scie',f(phi,1),'°')+kpi('Morceaux',j+1);
+ if(Rc>0){if(Rc<r)msg+='<div class="err">Rc doit être supérieur au rayon du tube.</div>';
+  k+=kpi('Segment (axe)',f(2*Rc*tp,1),'mm')+kpi('Segment intrados',f(2*(Rc-r)*tp,1),'mm')+kpi('Segment extrados',f(2*(Rc+r)*tp,1),'mm')+kpi('Demi-segment (axe)',f(Rc*tp,1),'mm');}
+ $('og-res').innerHTML=k;$('og-msg').innerHTML=msg+(j>1&&!(Rc>0)?'<div class="warn">Saisis Rc pour obtenir les longueurs de segments.</div>':'');
+ let t='<tr><th>Gén.</th><th>Angle</th><th>Pos. (mm)</th><th>h (mm)</th></tr>';
+ const h=th=>r*tp*(1+Math.cos(th));
+ for(let i=0;i<=N;i++){const th=2*Math.PI*i/N;t+=`<tr><td>${i===N?'0 (retour)':i}</td><td>${f(360*i/N,1)}°</td><td>${f(r*th,1)}</td><td><b style="color:var(--ac2)">${f(h(th),1)}</b></td></tr>`}
+ $('og-tab').innerHTML=t;
+ const sw=circ*0.004,fs=Math.max(circ*0.022,4);let pts=[];for(let i=0;i<=360;i++){const th=rad(i);pts.push(r*th+','+(hmax-h(th)))}
+ let g=`<rect x="0" y="0" width="${circ}" height="${hmax}" fill="none" stroke="${C.mu}" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}"/><polyline points="${pts.join(' ')}" fill="none" stroke="${C.ac}" stroke-width="${sw*2}"/>`;
+ for(let i=0;i<=N;i++){const th=2*Math.PI*i/N,x=r*th;g+=`<line x1="${x}" y1="${hmax}" x2="${x}" y2="${hmax-h(th)}" stroke="${C.mu}" stroke-width="${sw}"/><text x="${x}" y="${hmax+fs*1.2}" font-size="${fs}" fill="${C.tx}" text-anchor="middle" font-family="JetBrains Mono">${i%N}</text>`}
+ g+=`<line x1="0" y1="${hmax}" x2="${circ}" y2="${hmax}" stroke="${C.tx}" stroke-width="${sw*1.5}"/>`;
+ $('og-svg').innerHTML=svgWrap(0,0,circ,hmax+fs*1.5,g,fs);
+}
+
+// ---------- CONE ----------
+function calcCn(){
+ const e=num('cn-e')||0,D=num('cn-D')-e,d=num('cn-d')-e,H=num('cn-H'),p=Math.max(1,Math.round(num('cn-p')||1));
+ if(!(D>0&&d>=0&&H>0)||d>=D){$('cn-msg').innerHTML='<div class="err">Il faut D &gt; d et une hauteur positive.</div>';$('cn-res').innerHTML='';$('cn-svg').innerHTML='';return}
+ const G=Math.hypot(H,(D-d)/2),R=G*D/(D-d),r=R-G,th=360*(D/2)/R/p,ch=2*R*Math.sin(rad(th)/2),chr=2*r*Math.sin(rad(th)/2);
+ const ang=deg(Math.atan(H/((D-d)/2)));
+ let msg='';if(th>360)msg='<div class="err">Secteur &gt; 360° : impossible en une pièce, augmente le nombre de parties.</div>';
+ else if(th>180&&p===1)msg='<div class="warn">Secteur &gt; 180° : pense à le faire en 2 parties si la tôle est trop petite.</div>';
+ $('cn-msg').innerHTML=msg;
+ $('cn-res').innerHTML=kpi('Grand rayon R',f(R,1),'mm',1)+kpi('Petit rayon r',f(r,1),'mm',1)+kpi('Angle secteur θ',f(th,2),'°',1)+kpi('Génératrice',f(G,1),'mm')+kpi('Corde grand arc',f(ch,1),'mm')+kpi('Corde petit arc',f(chr,1),'mm')+kpi('Arc grand',f(Math.PI*D/p,1),'mm')+kpi('Arc petit',f(Math.PI*d/p,1),'mm')+kpi('Pente génératrice',f(ang,1),'°');
+ if(th>360){$('cn-svg').innerHTML='';return}
+ const a0=-Math.PI/2-rad(th)/2,a1=-Math.PI/2+rad(th)/2,P=(rr,a)=>[rr*Math.cos(a),rr*Math.sin(a)];
+ const big=th>180?1:0,[x0,y0]=P(R,a0),[x1,y1]=P(R,a1),[u0,v0]=P(r,a0),[u1,v1]=P(r,a1);
+ const path=`M${u0},${v0} L${x0},${y0} A${R},${R} 0 ${big} 1 ${x1},${y1} L${u1},${v1} A${r},${r} 0 ${big} 0 ${u0},${v0} Z`;
+ const sw=R*0.006,fs=R*0.05;
+ // bornes
+ const pts=[[0,0],[x0,y0],[x1,y1]];for(let i=0;i<=40;i++)pts.push(P(R,a0+(a1-a0)*i/40));
+ const xs=pts.map(q=>q[0]),ys=pts.map(q=>q[1]);const mnx=Math.min(...xs),mny=Math.min(...ys);
+ let g=`<path d="${path}" fill="rgba(255,138,31,.12)" stroke="${C.ac}" stroke-width="${sw*2}"/><line x1="0" y1="0" x2="${x0}" y2="${y0}" stroke="${C.mu}" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}"/><line x1="0" y1="0" x2="${x1}" y2="${y1}" stroke="${C.mu}" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}"/><circle cx="0" cy="0" r="${sw*3}" fill="${C.ac2}"/>`;
+ g+=`<text x="0" y="${-R-fs*0.6}" font-size="${fs}" fill="${C.tx}" text-anchor="middle" font-family="JetBrains Mono">R ${f(R,0)}</text><text x="0" y="${fs*1.5}" font-size="${fs}" fill="${C.tx}" text-anchor="middle" font-family="JetBrains Mono">θ ${f(th,1)}°</text>`;
+ $('cn-svg').innerHTML=svgWrap(mnx,mny-fs*1.5,Math.max(...xs)-mnx,Math.max(...ys)-mny+fs*3,g,fs);
+}
+
+// ---------- VIROLE ----------
+function calcVr(){
+ const D=num('vr-D'),e=num('vr-e')||0,h=num('vr-h'),t=$('vr-t').value,m=MATS[$('vr-m').value];
+ const Dm=t==='int'?D+e:t==='ext'?D-e:D;
+ if(!(Dm>0)){$('vr-res').innerHTML='';return}
+ const L=Math.PI*Dm,mass=h>0?L*h*e*m.rho/1e6:NaN;
+ $('vr-res').innerHTML=kpi('Longueur de tôle',f(L,1),'mm',1)+kpi('Ø moyen',f(Dm,1),'mm')+kpi('Ø int.',f(Dm-e,1),'mm')+kpi('Ø ext.',f(Dm+e,1),'mm')+(h>0?kpi('Tôle',f(L,0)+' × '+f(h,0),'mm')+kpi('Masse',f(mass,2),'kg'):'');
+}
+
+// ---------- MASSE ----------
+const MSD={tole:[['L','Longueur (mm)',1000],['l','Largeur (mm)',500],['e','Épaisseur (mm)',3]],tube:[['D','Ø ext. (mm)',60.3],['e','Épaisseur (mm)',2.9],['L','Longueur (mm)',6000]],rect:[['A','Côté A (mm)',40],['B','Côté B (mm)',40],['e','Épaisseur (mm)',3],['L','Longueur (mm)',6000]],rond:[['D','Ø (mm)',20],['L','Longueur (mm)',1000]],disque:[['D','Ø ext. (mm)',300],['d','Ø trou (mm)',0],['e','Épaisseur (mm)',10]]};
+function msDims(){const sv=store.get('msd')||{};$('ms-dims').innerHTML=MSD[$('ms-f').value].map(([k,l,v])=>`<label>${l}<input id="msd-${k}" inputmode="decimal" value="${sv[$('ms-f').value+k]??v}"></label>`).join('')}
+$('ms-f').addEventListener('change',()=>{msDims();calcMs()});
+$('ms-dims').addEventListener('input',()=>{const sv=store.get('msd')||{};MSD[$('ms-f').value].forEach(([k])=>sv[$('ms-f').value+k]=$('msd-'+k).value);store.set('msd',sv);calcMs()});
+function calcMs(){
+ const fm=$('ms-f').value,m=MATS[$('ms-m').value],q=Math.max(1,num('ms-q')||1),g=k=>num('msd-'+k);let V=NaN,Lm=NaN,S=NaN;
+ if(fm==='tole'){V=g('L')*g('l')*g('e');S=g('L')*g('l')/1e6}
+ if(fm==='tube'){const D=g('D'),e=g('e');V=Math.PI/4*(D*D-(D-2*e)**2)*g('L');Lm=Math.PI/4*(D*D-(D-2*e)**2)*1000;S=Math.PI*D*g('L')/1e6}
+ if(fm==='rect'){const A=g('A'),B=g('B'),e=g('e');const a=A*B-(A-2*e)*(B-2*e);V=a*g('L');Lm=a*1000;S=2*(A+B)*g('L')/1e6}
+ if(fm==='rond'){const D=g('D');V=Math.PI/4*D*D*g('L');Lm=Math.PI/4*D*D*1000}
+ if(fm==='disque'){const D=g('D'),d=g('d')||0;V=Math.PI/4*(D*D-d*d)*g('e');S=Math.PI/4*(D*D-d*d)/1e6}
+ const kg=V*m.rho/1e6;
+ $('ms-res').innerHTML=kpi('Masse unitaire',f(kg,2),'kg',1)+(q>1?kpi('Masse × '+q,f(kg*q,2),'kg',1):'')+(isFinite(Lm)?kpi('Masse linéique',f(Lm*m.rho/1e6,2),'kg/m'):'')+(isFinite(S)?kpi('Surface',f(S,3),'m²'):'')+kpi('Densité',f(m.rho,2),'kg/dm³');
+}
+
+// ---------- init ----------
+plRender();msDims();
+persist('pliage',calcPl);persist('piquage',calcPq);persist('onglet',calcOg);persist('cone',calcCn);persist('virole',calcVr);persist('masse',calcMs);
+msDims();
+route();
+if('serviceWorker' in navigator&&window.self===window.top&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
